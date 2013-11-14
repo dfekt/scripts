@@ -9,10 +9,11 @@ my $path_servers = "/srv/gs/$game/active";
 my $start_file = "run.sh";
 my @servers = glob "$path_servers/*";
 my @servers_names = map(basename($_), @servers);
+my @allowed_options = ("start", "stop", "restart", "status");
 
 sub main
 {
-    if ($#ARGV != 1) {
+    if ($#ARGV != 1 or !(grep $_ eq $ARGV[0], @allowed_options)) {
         &usage();
     } else {
         if ($ARGV[0] eq "start") {
@@ -89,7 +90,7 @@ sub stop
 {
     my $arg = shift;
     if ($arg eq "all") {
-        print "Killing all servers!";
+        print "Killing all servers!\n";
         system("tmux kill-session -t $game");
     } else {
         print "Stoping $arg\n";
@@ -104,12 +105,15 @@ sub restart
 {
     my $arg = shift;
     if ($arg eq "all") {
-        print "Restarting all servers!";
+        print "Restarting all servers!\n";
         &stop($arg);
         &start($arg);
+        print "All servers are now restarted\n";
     } else {
+        print "Restarting $arg\n";
         &stop($arg);
         &start($arg);
+        print "Restarted $arg\n";
     }
 }
 
@@ -117,7 +121,7 @@ sub restart
 sub status
 {
     #implement smart cool shit
-    print "NOT YET IMPLEMENTED EXCEPTION LOL";
+    print "NOT YET IMPLEMENTED EXCEPTION LOL\n";
 }
 
 
