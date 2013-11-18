@@ -127,7 +127,7 @@ sub status
 
 sub usage
 {
-    print "Usage: manage.py [start | stop | restart | status] [all | servername]\n"
+    print "Usage: manage.pl [start | stop | restart | status] [all | servername]\n"
 }
 
 &main()
