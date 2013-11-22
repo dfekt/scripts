@@ -2,14 +2,17 @@
 use strict;
 use warnings;
 use File::Basename;
+use IPC::System::Simple qw(capture);
 
 ###### Settings ######
 my $game = "css";
 my $path_servers = "/srv/gs/$game/active";
 my $start_file = "run.sh";
+my $pidfile = "cstrike/srcds.pid";
 my @servers = glob "$path_servers/*";
 my @servers_names = map(basename($_), @servers);
 my @allowed_options = ("start", "stop", "restart", "status");
+
 
 sub main
 {
@@ -94,8 +97,12 @@ sub stop
         system("tmux kill-session -t $game");
     } else {
         print "Stoping $arg\n";
-        #TODO
-        system("tmux new-window -a -n $arg -t $game -P \"cd $path_servers/$arg; ./$start_file\"");
+        open my $pfile, "<$path_servers/$arg/$pidfile" or die "PID file not found";
+        my $pid = <$pfile>;
+        chomp $pid;
+        close $pfile;
+        my $ppid = capture("ps -p $pid -o ppid=");
+        system("kill $ppid");
         print "Stopped $arg\n";
     }
 }
